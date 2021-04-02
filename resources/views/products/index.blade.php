@@ -43,8 +43,8 @@
                     <thead>
                     <tr>
                         <th>#</th>
-                        <th>Title</th>
-                        <th>Description</th>
+                        <th width="10%">Title</th>
+                        <th width="35%">Description</th>
                         <th>Variant</th>
                         <th width="150px">Action</th>
                     </tr>
@@ -54,12 +54,14 @@
 
                     @foreach ($products as $product)
                     <tr>
-                        <td>{{ ($products->per_page*($products->current_page-1))+$loop->iteration }}</td>
+                        <td>
+                            {{ ($products->perPage()*($products->currentPage()-1))+$loop->iteration }}
+                        </td>
                         <td>{{ $product->title }} <br> Created at : {{ now()->parse($product->created_at)->format('d-M-Y') }}</td>
                         <td>{{ $product->description }}</td>
                         <td>
-                            @foreach ($product->variantPrices as $variant)
                             <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+                                @foreach ($product->variantPrices as $variant)
 
                                 <dt class="col-sm-3 pb-0">
                                     {{ $variant->productVariantOne->variant ?? '' }}/ {{ $variant->productVariantTwo->variant ?? '' }}/ {{ $variant->productVariantThree->variant ?? '' }}
@@ -70,8 +72,8 @@
                                         <dd class="col-sm-8 pb-0">InStock : {{ number_format($variant->stock,2) }}</dd>
                                     </dl>
                                 </dd>
+                                @endforeach
                             </dl>
-                            @endforeach
                             <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more</button>
                         </td>
                         <td>
@@ -118,7 +120,7 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing {{ $products->from }} to {{ $products->to }} out of {{ $totalProductCount }}</p>
+                    <p>Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} out of {{ $totalProductCount }}</p>
                 </div>
                 <div class="col-md-2">
                     {{ $products->onEachSide(3)->links() }}

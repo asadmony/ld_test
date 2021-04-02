@@ -41,6 +41,56 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $product = new Product;
+        $product->title = $request->title;
+        $product->sku = $request->sku;
+        $product->description = $request->description;
+        $product->save();
+
+
+        foreach($request->product_variant as $v){
+            $variant_id = $v['option'];
+            foreach ($v['tags'] as $t) {
+
+                $pv = new ProductVariant;
+
+                $pv->variant = $t;
+                $pv->variant_id = $variant_id;
+                $pv->product_id = $product->id;
+                $pv->save();
+
+            }
+        }
+        foreach($request->product_variant_prices as $vp){
+
+            $productVariantPrice = new ProductVariantPrice;
+
+            $titles = explode('/',$vp['title']);
+            if (isset($titles[0]) && $titles[0] != "") {
+                $prVrOne =  ProductVariant::where('product_id', $product->id)->where('variant',$titles[0])->first();
+                if ($prVrOne) {
+                    $productVariantPrice->product_variant_one = $prVrOne->id;
+                }
+            }
+            if (isset($titles[1]) && $titles[1] != "") {
+                $prVrTwo =  ProductVariant::where('product_id', $product->id)->where('variant',$titles[1])->first();
+                if ($prVrTwo) {
+                    $productVariantPrice->product_variant_two = $prVrTwo->id;
+                }
+            }
+            if (isset($titles[2]) && $titles[2] != "") {
+                $prVrThree =  ProductVariant::where('product_id', $product->id)->where('variant',$titles[2])->first();
+                if ($prVrThree) {
+                    $productVariantPrice->product_variant_three = $prVrThree->id;
+                }
+            }
+            $productVariantPrice->product_id  = $product->id;
+            $productVariantPrice->price = $vp['price'];
+            $productVariantPrice->stock = $vp['stock'];
+            $productVariantPrice->save();
+
+            return response()->json($product, 200);
+        }
 
     }
 
