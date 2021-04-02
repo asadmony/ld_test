@@ -25,4 +25,10 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class, 'product_id');
     }
 
+
+    public function getAllProducts($pagination)
+    {
+        return $this->paginate($pagination);
+    }
+
 }

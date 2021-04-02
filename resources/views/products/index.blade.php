@@ -52,7 +52,37 @@
 
                     <tbody>
 
+                    @foreach ($products as $product)
                     <tr>
+                        <td>{{ ($products->per_page*($products->current_page-1))+$loop->iteration }}</td>
+                        <td>{{ $product->title }} <br> Created at : {{ now()->parse($product->created_at)->format('d-M-Y') }}</td>
+                        <td>{{ $product->description }}</td>
+                        <td>
+                            @foreach ($product->variantPrices as $variant)
+                            <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+
+                                <dt class="col-sm-3 pb-0">
+                                    {{ $variant->productVariantOne->variant ?? '' }}/ {{ $variant->productVariantTwo->variant ?? '' }}/ {{ $variant->productVariantThree->variant ?? '' }}
+                                </dt>
+                                <dd class="col-sm-9">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4 pb-0">Price : {{ number_format($variant->price,2) }}</dt>
+                                        <dd class="col-sm-8 pb-0">InStock : {{ number_format($variant->stock,2) }}</dd>
+                                    </dl>
+                                </dd>
+                            </dl>
+                            @endforeach
+                            <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more</button>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ route('product.edit', $variant->id) }}" class="btn btn-success">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+
+                    {{-- <tr>
                         <td>1</td>
                         <td>T-Shirt <br> Created at : 25-Aug-2020</td>
                         <td>Quality product in low cost</td>
@@ -76,7 +106,7 @@
                                 <a href="{{ route('product.edit', 1) }}" class="btn btn-success">Edit</a>
                             </div>
                         </td>
-                    </tr>
+                    </tr> --}}
 
                     </tbody>
 
@@ -88,10 +118,10 @@
         <div class="card-footer">
             <div class="row justify-content-between">
                 <div class="col-md-6">
-                    <p>Showing 1 to 10 out of 100</p>
+                    <p>Showing {{ $products->from }} to {{ $products->to }} out of {{ $totalProductCount }}</p>
                 </div>
                 <div class="col-md-2">
-
+                    {{ $products->onEachSide(3)->links() }}
                 </div>
             </div>
         </div>

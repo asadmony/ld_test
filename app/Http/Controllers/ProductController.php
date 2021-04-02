@@ -15,9 +15,11 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function index()
+    public function index(Product $product)
     {
-        return view('products.index');
+        $products = $product->getAllProducts(2);
+        $totalProductCount = $product->count();
+        return view('products.index', compact('products', 'totalProductCount'));
     }
 
     /**
