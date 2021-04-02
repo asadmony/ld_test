@@ -28,7 +28,31 @@ class Product extends Model
 
     public function getAllProducts($pagination)
     {
-        return $this->paginate($pagination);
+        return $this->latest()->paginate($pagination);
+    }
+
+    public function filter($title = null, $variant = null, $priceFrom = null, $priceTo = null, $date = null)
+    {
+        return $this->where(function ($query) use ($title,$variant,$priceFrom,$priceTo,$date){
+            if ($title != "") {
+                $query->where('title', 'like',"%{$title}%");
+            }
+            if ($date != "") {
+                $query->whereDate('created_at', $date);
+            }
+            // if ($variant != "") {
+            //     $query->variants()->where('variant', 'like' , "%{$variant}%");
+            // }
+            // if ($priceFrom != "") {
+            //     $query->variantPrices()->where('price', '>=', $priceFrom);
+            // }
+            // if ($priceTo != "") {
+            //     $query->variantPrices()->where('price', '<=', $priceTo);
+            // }
+          })
+        //   ->groupBy('id')
+            ->latest()
+          ->paginate(2);
     }
 
 }

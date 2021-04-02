@@ -15,11 +15,25 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Http\Response|\Illuminate\View\View
      */
-    public function index(Product $product)
+    public function index(Product $product, Request $request)
     {
-        $products = $product->getAllProducts(2);
+        if (isset($request->title) || isset($request->variant) || isset($request->price_from) || isset($request->price_to) || isset($request->date)) {
+            $title = $request->title ?? '';
+            $variant = $request->variant ?? '';
+            $price_from = $request->price_from ?? '';
+            $price_to = $request->price_to ?? '';
+            $date = $request->date ?? '';
+
+            $products = $product->filter($title,$variant,$price_from,$price_to,$date);
+            $request->flash();
+        }else{
+            $products = $product->getAllProducts(2);
+        }
+        // dd($products);
         $totalProductCount = $product->count();
-        return view('products.index', compact('products', 'totalProductCount'));
+
+        $variants = ProductVariant::orderBy('variant_id')->distinct()->with('variantParent')->get();
+        return view('products.index', compact('products', 'variants' , 'totalProductCount'));
     }
 
     /**
@@ -41,7 +55,11 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $product = new Product;
+        if (isset($request->id) && !empty($request->id)) {
+            $product = Product::find($request->id);
+        }else{
+            $product = new Product;
+        }
         $product->title = $request->title;
         $product->sku = $request->sku;
         $product->description = $request->description;
@@ -114,8 +132,9 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $productDetails = $product->load('variants', 'variantPrices');
         $variants = Variant::all();
-        return view('products.edit', compact('variants'));
+        return view('products.edit', compact('variants', 'productDetails'));
     }
 
     /**

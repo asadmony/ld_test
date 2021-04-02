@@ -2024,10 +2024,15 @@ __webpack_require__.r(__webpack_exports__);
     variants: {
       type: Array,
       required: true
+    },
+    product: {
+      type: Array,
+      required: false
     }
   },
   data: function data() {
     return {
+      product_id: null,
       product_name: '',
       product_sku: '',
       description: '',
@@ -2046,6 +2051,15 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     };
+  },
+  created: function created() {
+    if (this.product) {
+      console.log(this.product);
+      this.product_id = this.product.id;
+      this.product_name = this.product.title;
+      this.product_sku = this.product.sku;
+      this.description = this.product.description;
+    }
   },
   methods: {
     // it will push a new object into product variant
@@ -2101,6 +2115,7 @@ __webpack_require__.r(__webpack_exports__);
     // store product into database
     saveProduct: function saveProduct() {
       var product = {
+        id: this.product_id,
         title: this.product_name,
         sku: this.product_sku,
         description: this.description,
@@ -2110,6 +2125,10 @@ __webpack_require__.r(__webpack_exports__);
       };
       axios.post('/product', product).then(function (response) {
         console.log(response.data);
+
+        if (response.status == 200) {
+          alert('Operation successful!');
+        }
       })["catch"](function (error) {
         console.log(error);
       });
@@ -63379,8 +63398,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\Exam\interview-question-sr\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\Exam\interview-question-sr\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\Exam\interview-question-\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\Exam\interview-question-\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

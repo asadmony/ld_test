@@ -110,10 +110,15 @@ export default {
         variants: {
             type: Array,
             required: true
-        }
+        },
+        product: {
+            type: Array,
+            required: false
+        },
     },
     data() {
         return {
+            product_id: null,
             product_name: '',
             product_sku: '',
             description: '',
@@ -131,6 +136,15 @@ export default {
                 maxFilesize: 0.5,
                 headers: {"My-Awesome-Header": "header value"}
             }
+        }
+    },
+    created() {
+        if(this.product){
+            console.log(this.product)
+            this.product_id = this.product.id
+            this.product_name = this.product.title
+            this.product_sku = this.product.sku
+            this.description = this.product.description
         }
     },
     methods: {
@@ -180,6 +194,7 @@ export default {
         // store product into database
         saveProduct() {
             let product = {
+                id: this.product_id,
                 title: this.product_name,
                 sku: this.product_sku,
                 description: this.description,
@@ -188,9 +203,11 @@ export default {
                 product_variant_prices: this.product_variant_prices
             }
 
-
             axios.post('/product', product).then(response => {
                 console.log(response.data);
+                if (response.status == 200) {
+                    alert('Operation successful!')
+                }
             }).catch(error => {
                 console.log(error);
             })

@@ -8,14 +8,29 @@
 
 
     <div class="card">
-        <form action="" method="get" class="card-header">
+        <form action="{{ route('product.index') }}" method="get" class="card-header">
             <div class="form-row justify-content-between">
                 <div class="col-md-2">
-                    <input type="text" name="title" placeholder="Product Title" class="form-control">
+                    <input type="text" name="title" placeholder="Product Title" class="form-control" value="{{ old('title') }}">
                 </div>
                 <div class="col-md-2">
-                    <select name="variant" id="" class="form-control">
-
+                    <select name="variant" class="form-control">
+                        <option value="" selected disabled>Search Variant</option>
+                        @php
+                            $curVar = '';
+                        @endphp
+                        @foreach ($variants as $item)
+                            @php
+                                $prevVar = $item->variantParent->title;
+                            @endphp
+                            @if ($prevVar != $curVar)
+                                <option class="" value="" disabled>{{ $prevVar }}</option>
+                            @php
+                                $curVar = $prevVar;
+                            @endphp
+                            @endif
+                                <option value="{{ $item->variant }}"> - {{ $item->variant }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -24,12 +39,12 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text">Price Range</span>
                         </div>
-                        <input type="text" name="price_from" aria-label="First name" placeholder="From" class="form-control">
-                        <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control">
+                        <input type="text" name="price_from" aria-label="First name" placeholder="From" class="form-control" value="{{ old('price_from') }}">
+                        <input type="text" name="price_to" aria-label="Last name" placeholder="To" class="form-control" value="{{ old('price_to') }}">
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <input type="date" name="date" placeholder="Date" class="form-control">
+                    <input type="date" name="date" placeholder="Date" class="form-control" value="{{ old('date') }}">
                 </div>
                 <div class="col-md-1">
                     <button type="submit" class="btn btn-primary float-right"><i class="fa fa-search"></i></button>
@@ -78,7 +93,7 @@
                         </td>
                         <td>
                             <div class="btn-group btn-group-sm">
-                                <a href="{{ route('product.edit', $variant->id) }}" class="btn btn-success">Edit</a>
+                                <a href="{{ route('product.edit', [$product->id]) }}" class="btn btn-success">Edit</a>
                             </div>
                         </td>
                     </tr>
@@ -123,7 +138,7 @@
                     <p>Showing {{ $products->firstItem() }} to {{ $products->lastItem() }} out of {{ $totalProductCount }}</p>
                 </div>
                 <div class="col-md-2">
-                    {{ $products->onEachSide(3)->links() }}
+                    {{ $products->render() }}
                 </div>
             </div>
         </div>
