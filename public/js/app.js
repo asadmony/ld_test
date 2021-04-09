@@ -2053,12 +2053,53 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   created: function created() {
+    var _this = this;
+
     if (this.product) {
       console.log(this.product);
       this.product_id = this.product.id;
       this.product_name = this.product.title;
       this.product_sku = this.product.sku;
       this.description = this.product.description;
+
+      if (this.product.variant_types.length > 0) {
+        this.product_variant = [];
+        this.product.variant_types.forEach(function (variant, index) {
+          console.log(index);
+
+          _this.product_variant.push({
+            option: variant.id,
+            tags: []
+          });
+
+          _this.product.variants.forEach(function (pvr) {
+            if (pvr.variant_id == variant.id) {
+              _this.product_variant[index].tags.push(pvr.variant);
+            }
+          });
+        });
+      }
+
+      if (this.product.variant_prices.length > 0) {
+        this.product_variant_prices = [];
+        this.product.variant_prices.forEach(function (item) {
+          var pvpTitle = item.product_variant_one.variant + '/';
+
+          if (item.product_variant_two) {
+            pvpTitle = pvpTitle + item.product_variant_two.variant + '/';
+          }
+
+          if (item.product_variant_three) {
+            pvpTitle = pvpTitle + item.product_variant_three.variant;
+          }
+
+          _this.product_variant_prices.push({
+            title: pvpTitle,
+            price: item.price,
+            stock: item.stock
+          });
+        });
+      }
     }
   },
   methods: {
@@ -2083,7 +2124,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     // check the variant and render all the combination
     checkVariant: function checkVariant() {
-      var _this = this;
+      var _this2 = this;
 
       var tags = [];
       this.product_variant_prices = [];
@@ -2091,7 +2132,7 @@ __webpack_require__.r(__webpack_exports__);
         tags.push(item.tags);
       });
       this.getCombn(tags).forEach(function (item) {
-        _this.product_variant_prices.push({
+        _this2.product_variant_prices.push({
           title: item,
           price: 0,
           stock: 0

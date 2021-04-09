@@ -135,7 +135,7 @@ export default {
                 thumbnailWidth: 150,
                 maxFilesize: 0.5,
                 headers: {"My-Awesome-Header": "header value"}
-            }
+            },
         }
     },
     created() {
@@ -145,6 +145,38 @@ export default {
             this.product_name = this.product.title
             this.product_sku = this.product.sku
             this.description = this.product.description
+            if (this.product.variant_types.length > 0) {
+                this.product_variant = [];
+                this.product.variant_types.forEach((variant, index)=>{
+                    console.log(index);
+                    this.product_variant.push({
+                        option : variant.id,
+                        tags: [],
+                    })
+                    this.product.variants.forEach(pvr=>{
+                        if (pvr.variant_id == variant.id) {
+                            this.product_variant[index].tags.push(pvr.variant)
+                        }
+                    })
+                });
+            }
+            if (this.product.variant_prices.length > 0) {
+                this.product_variant_prices = [];
+                this.product.variant_prices.forEach(item => {
+                    let pvpTitle = item.product_variant_one.variant+'/'
+                    if (item.product_variant_two) {
+                        pvpTitle = pvpTitle+item.product_variant_two.variant+'/'
+                    }
+                    if (item.product_variant_three) {
+                        pvpTitle = pvpTitle+item.product_variant_three.variant
+                    }
+                this.product_variant_prices.push({
+                    title: pvpTitle,
+                    price: item.price,
+                    stock: item.stock,
+                })
+            })
+            }
         }
     },
     methods: {

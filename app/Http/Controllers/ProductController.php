@@ -65,6 +65,17 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->save();
 
+        if ($product->has('variants')) {
+            foreach ($product->variants as $item) {
+                $item->delete();
+            }
+        }
+
+        if ($product->has('variantPrices')) {
+            foreach ($product->variantPrices as $item) {
+                $item->delete();
+            }
+        }
 
         foreach($request->product_variant as $v){
             $variant_id = $v['option'];
@@ -107,9 +118,9 @@ class ProductController extends Controller
             $productVariantPrice->stock = $vp['stock'];
             $productVariantPrice->save();
 
-            return response()->json($product, 200);
         }
 
+        return response()->json($product, 200);
     }
 
 
@@ -132,7 +143,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $productDetails = $product->load('variants', 'variantPrices');
+        $productDetails = $product->load('variantTypes','variants', 'variantPrices');
         $variants = Variant::all();
         return view('products.edit', compact('variants', 'productDetails'));
     }

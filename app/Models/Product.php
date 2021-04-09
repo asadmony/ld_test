@@ -20,9 +20,14 @@ class Product extends Model
         return $this->hasMany(ProductVariant::class, 'product_id');
     }
 
+    public function variantTypes()
+    {
+        return $this->hasManyThrough(Variant::class, ProductVariant::class, 'product_id', 'id', 'id', 'variant_id')->groupBy('id', 'title', 'description', 'created_at', 'updated_at', 'product_variants.product_id');
+    }
+
     public function variantPrices()
     {
-        return $this->hasMany(ProductVariantPrice::class, 'product_id');
+        return $this->hasMany(ProductVariantPrice::class, 'product_id')->with('productVariantOne', 'productVariantTwo', 'productVariantThree');
     }
 
 
